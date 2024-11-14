@@ -1,16 +1,44 @@
-import { useState } from "react";
-import { StyleSheet, ImageBackground } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, ImageBackground, SafeAreaView, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useState, useEffect } from "react";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 
 import StartGameScreen from "./screens/StartGameScreen";
 import GameScreen from "./screens/GameScreen";
-import GameOverScreen from "./screens/GameOverScreen";
+
 import Colors from "./constants/colors";
+import GameOverScreen from "./screens/GameOverScreen";
+
+SplashScreen.preventAutoHideAsync()
+  .then((result) =>
+    console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
+  )
+  .catch(console.warn);
 
 export default function App() {
   const [userNumber, setUserNumber] = useState();
   const [gameIsOver, setGameIsOver] = useState(true);
+
+  // Load fonts
+  const [fontsLoaded] = useFonts({
+    OpenSans: require("./assets/fonts/OpenSans-Regular.ttf"),
+    OpenSansBold: require("./assets/fonts/OpenSans-Bold.ttf"),
+  });
+
+  // Watch for fonts to be loaded, then hide the splash screen
+  useEffect(() => {
+    async function hideSplashScreen() {
+      await SplashScreen.hideAsync();
+    }
+    if (fontsLoaded) {
+      hideSplashScreen();
+    }
+  }, [fontsLoaded]);
+  // Initally return null instead of <AppLoading />
+  if (!fontsLoaded) {
+    return null;
+  }
 
   function pickedNumberHandler(pickedNumber) {
     setUserNumber(pickedNumber);
@@ -18,11 +46,10 @@ export default function App() {
   }
 
   function gameOverHandler() {
-    console.log("the game is over");
     setGameIsOver(true);
   }
 
-  let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />;
+  let screen = <StartGameScreen onNumberConfirm={pickedNumberHandler} />;
 
   if (userNumber) {
     screen = (
@@ -36,8 +63,8 @@ export default function App() {
 
   return (
     <LinearGradient
-      colors={[Colors.primary700, Colors.accent500]}
       style={styles.rootScreen}
+      colors={[Colors.primary700, Colors.accent500]}
     >
       <ImageBackground
         source={require("./assets/images/background.png")}
