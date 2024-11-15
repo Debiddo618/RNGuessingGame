@@ -1,4 +1,6 @@
-import { StyleSheet, ImageBackground, SafeAreaView, Text } from "react-native";
+import { StyleSheet, ImageBackground } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { LinearGradient } from "expo-linear-gradient";
 import { useState, useEffect } from "react";
 import { useFonts } from "expo-font";
@@ -22,8 +24,8 @@ export default function App() {
 
   // Load fonts
   const [fontsLoaded] = useFonts({
-    OpenSans: require("./assets/fonts/OpenSans-Regular.ttf"),
-    OpenSansBold: require("./assets/fonts/OpenSans-Bold.ttf"),
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
   });
 
   // Watch for fonts to be loaded, then hide the splash screen
@@ -49,7 +51,7 @@ export default function App() {
     setGameIsOver(true);
   }
 
-  let screen = <StartGameScreen onNumberConfirm={pickedNumberHandler} />;
+  let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />;
 
   if (userNumber) {
     screen = (
